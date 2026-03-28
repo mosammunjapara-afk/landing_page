@@ -1,0 +1,89 @@
+/* ═══ AUTH PAGES (Signup / Login) ════════════════════════ */
+
+.auth-page { display: flex; min-height: 100vh; background: var(--navy); }
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%; min-height: 100vh;
+}
+
+/* LEFT DECORATIVE PANEL */
+.auth-left {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #0c1220 0%, #0a1628 60%, #0e1a10 100%);
+  border-right: 1px solid var(--navy-bdr);
+  display: flex; align-items: center; justify-content: center;
+  padding: 3rem;
+}
+.auth-left-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 2.5rem;
+}
+.auth-left-headline h2 em { color: var(--gold); font-style: italic; }
+.auth-left-headline p { color: var(--white-dim); margin-top: 0.8rem; max-width: 320px; }
+.auth-left-perks { display: flex; flex-direction: column; gap: 0.7rem; }
+.perk {
+  display: flex; align-items: center; gap: 0.7rem;
+  font-size: 0.9rem; color: var(--white-dim);
+}
+.perk span { color: var(--green); font-weight: 700; }
+.auth-orb {
+  position: absolute;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+  opacity: 0.06; filter: blur(60px);
+  bottom: -100px; right: -100px;
+}
+
+/* RIGHT FORM PANEL */
+.auth-right {
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.auth-form-card {
+  width: 100%; max-width: 480px;
+  display: flex; flex-direction: column; gap: 1.5rem;
+}
+.auth-form-head h3 {
+  font-size: 1.8rem; font-family: var(--font-head);
+  color: var(--white);
+}
+.auth-form-head p { color: var(--white-dim); font-size: 0.9rem; margin-top: 0.25rem; }
+
+/* FORM */
+.auth-form { display: flex; flex-direction: column; gap: 1.1rem; }
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+.input-group { position: relative; display: flex; }
+.input-group .form-control { padding-right: 3rem; }
+.input-suffix {
+  position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  font-size: 1rem; color: var(--white-dim);
+  transition: var(--trans);
+}
+.input-suffix:hover { color: var(--gold); }
+
+/* CHECKBOX */
+.form-check {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  font-size: 0.82rem; color: var(--white-dim);
+}
+.form-check input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 14px; height: 14px; margin-top: 2px; flex-shrink: 0;
+}
+
+.auth-switch {
+  text-align: center;
+  font-size: 0.88rem; color: var(--white-dim);
+}
+
+@media (max-width: 768px) {
+  .auth-layout { grid-template-columns: 1fr; }
+  .auth-left { display: none; }
+  .auth-form-card { max-width: 100%; }
+  .form-row { grid-template-columns: 1fr; }
+}
