@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ theme }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — AutoBid Pro</title>
+  <style>
+    /* CSS Variables for Theme Support */
+    :root {
+      /* Light Theme (Default) */
+      --bg-primary: #f5f7fb;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-hover: #f8fafc;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-dim: #94a3b8;
+      --border-color: #e2e8f0;
+      --gold: #c9a84c;
+      --gold-dark: #b88b2a;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --sidebar-bg: #ffffff;
+      --topbar-bg: #ffffff;
+      --modal-bg: #ffffff;
+      --input-bg: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.05);
+      --overlay: rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Dark Theme */
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-dim: #94a3b8;
+      --border-color: #334155;
+      --gold: #c9a84c;
+      --gold-dark: #b88b2a;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --sidebar-bg: #1e293b;
+      --topbar-bg: #1e293b;
+      --modal-bg: #1e293b;
+      --input-bg: #334155;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --overlay: rgba(0, 0, 0, 0.7);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+    }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100%;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      z-index: 100;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    
+    .sb-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .sb-logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .sb-logo span {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .sb-close {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    
+    .sb-profile {
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+    
+    .sb-avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: white;
+    }
+    
+    .sb-profile-info {
+      flex: 1;
+    }
+    
+    .sb-pname {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .sb-pbiz {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .sb-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      position: absolute;
+      top: 1.8rem;
+      left: 3.2rem;
+      border: 2px solid var(--bg-card);
+    }
+    
+    .dot-green { background: var(--success); }
+    .dot-gold { background: var(--gold); }
+    .dot-gray { background: var(--text-dim); }
+    
+    .sb-nav {
+      padding: 1rem 0;
+    }
+    
+    .sb-nav-label {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+    
+    .sb-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    
+    .sb-link:hover, .sb-link.active {
+      background: var(--bg-hover);
+      color: var(--gold);
+      border-left: 3px solid var(--gold);
+    }
+    
+    .sb-link svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+    
+    .sb-badge {
+      margin-left: auto;
+      background: var(--bg-hover);
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+    
+    .sb-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: auto;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    
+    .sb-verify-btn {
+      display: block;
+      background: var(--gold);
+      color: white;
+      text-align: center;
+      padding: 0.6rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    
+    .sb-logout {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--danger);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    
+    /* Main Wrapper */
+    .dash-wrapper {
+      margin-left: 280px;
+      min-height: 100vh;
+    }
+    
+    /* Topbar */
+    .dash-topbar {
+      background: var(--topbar-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+    
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    
+    .hamburger span {
+      width: 22px;
+      height: 2px;
+      background: var(--text-secondary);
+      border-radius: 2px;
+    }
+    
+    .topbar-breadcrumb {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .topbar-verify-chip {
+      background: var(--bg-hover);
+      color: var(--gold);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      text-decoration: none;
+    }
+    
+    .topbar-notif {
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    
+    .topbar-avatar {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+    }
+    
+    /* Theme Toggle Button */
+    .theme-toggle {
+      background: var(--bg-hover);
+      border: 1px solid var(--border-color);
+      border-radius: 40px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      transition: all 0.3s;
+    }
+    
+    .theme-toggle:hover {
+      background: var(--border-color);
+    }
+    
+    .theme-toggle .icon {
+      font-size: 1rem;
+    }
+    
+    /* Main Content */
+    .dash-main {
+      padding: 2rem;
+    }
+    
+    .dash-section {
+      display: none;
+    }
+    
+    .dash-section.active {
+      display: block;
+    }
+    
+    .sec-head {
+      margin-bottom: 1.5rem;
+    }
+    
+    .sec-head h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .gold-txt {
+      color: var(--gold);
+    }
+    
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-hover);
+    }
+    
+    .kpi-val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    
+    .kpi-lbl {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    
+    .qa-head {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+    
+    .qa-grid {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .qa-btn {
+      background: var(--bg-hover);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    
+    .qa-btn:hover {
+      background: var(--border-color);
+    }
+    
+    /* Cars Grid */
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .car-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    
+    .car-card:hover {
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    .car-thumb {
+      height: 180px;
+      background: var(--bg-hover);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .car-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .car-tags {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 6px;
+    }
+    
+    .ctag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    
+    .ctag-brand {
+      background: var(--gold);
+      color: white;
+    }
+    
+    .ctag-fuel {
+      background: rgba(0,0,0,0.6);
+      color: white;
+    }
+    
+    .car-body {
+      padding: 1rem;
+    }
+    
+    .car-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+    
+    .car-year {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    
+    .car-meta-row {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin: 0.5rem 0;
+    }
+    
+    .hb-badge {
+      background: rgba(201, 168, 76, 0.15);
+      color: var(--gold);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+    
+    .car-pricing {
+      display: flex;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin: 0.75rem 0;
+    }
+    
+    .price-col {
+      flex: 1;
+      padding: 0.5rem;
+    }
+    
+    .price-lbl {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+    
+    .price-amt {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .car-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .btn-gold {
+      background: var(--gold);
+      color: white;
+    }
+    
+    .btn-gold:hover {
+      background: var(--gold-dark);
+    }
+    
+    .btn-buy {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-buy:hover {
+      background: #16a34a;
+    }
+    
+    .btn-bid-disabled {
+      background: var(--bg-hover);
+      color: var(--text-dim);
+      cursor: not-allowed;
+    }
+    
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+    }
+    
+    .btn-inspect {
+      background: var(--bg-hover);
+      color: var(--info);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      align-items: flex-end;
+    }
+    
+    .filter-group label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    
+    .form-control {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+    }
+    
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      border-collapse: collapse;
+    }
+    
+    .data-table th, .data-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .data-table th {
+      background: var(--bg-hover);
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    
+    /* Orders List */
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .order-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .order-icon {
+      font-size: 2rem;
+    }
+    
+    .order-name {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .order-price {
+      font-weight: 700;
+      color: var(--gold);
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--overlay);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+    
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .modal-box {
+      background: var(--modal-bg);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+    
+    .modal-box-lg {
+      max-width: 600px;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    .bid-current-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      z-index: 1100;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    #toast.success { background: var(--success); color: white; border: none; }
+    #toast.error { background: var(--danger); color: white; border: none; }
+    #toast.info { background: var(--info); color: white; border: none; }
+    
+    /* Document Upload Area */
+    .doc-upload-area {
+      background: var(--bg-hover);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .doc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    
+    .doc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0.9rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    
+    .doc-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    
+    .doc-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .doc-status {
+      font-size: 0.72rem;
+    }
+    
+    .doc-status.uploaded {
+      color: var(--success);
+    }
+    
+    .doc-status.missing {
+      color: var(--danger);
+    }
+    
+    .doc-upload-btn {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      background: var(--gold);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    
+    .doc-upload-btn:hover {
+      background: var(--gold-dark);
+    }
+    
+    .doc-upload-btn.done {
+      background: var(--success);
+      cursor: default;
+    }
+    
+    /* Docs Required Banner */
+    .docs-required-banner {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid var(--warning);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .docs-required-banner .banner-text {
+      color: var(--warning);
+      font-size: 0.9rem;
+    }
+    
+    .docs-required-banner .banner-text strong {
+      color: var(--warning);
+    }
+    
+    .docs-required-banner .upload-link {
+      background: var(--gold);
+      color: white;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .docs-check-bar {
+      background: rgba(245, 158, 11, 0.1);
+      padding: 0.5rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--warning);
+    }
+    
+    .docs-check-bar.complete {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--success);
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+    }
+    
+    .es-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* EMI Section */
+    .emi-section {
+      background: var(--bg-hover);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .emi-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    
+    .emi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    
+    .emi-inp label {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    
+    .emi-inp input, .emi-inp select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      padding: 0.45rem 0.6rem;
+      font-size: 0.83rem;
+    }
+    
+    .emi-result {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: var(--bg-card);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .emi-result-item {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .emi-result-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    
+    .emi-result-lbl {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      margin-top: 0.15rem;
+    }
+    
+    .price-breakdown {
+      background: var(--bg-hover);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+    }
+    
+    .pb-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.83rem;
+    }
+    
+    .pb-row:last-child {
+      border-bottom: none;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 0.93rem;
+      padding-top: 0.6rem;
+    }
+    
+    .pb-label {
+      color: var(--text-secondary);
+    }
+    
+    .pb-value {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    
+    /* Live Auctions */
+    .auction-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .live-bids-panel {
+      margin-top: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    
+    .lbp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 1rem;
+      background: var(--bg-hover);
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    
+    .lbp-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    
+    .lbp-toggle {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .lbp-body {
+      padding: 0.75rem 1rem;
+      display: none;
+    }
+    
+    .lbp-body.open {
+      display: block;
+    }
+    
+    .bid-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.8rem;
+    }
+    
+    .bid-row:last-child {
+      border-bottom: none;
+    }
+    
+    .bid-row-rank {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+    
+    .rank-1 {
+      background: rgba(201, 168, 76, 0.25);
+      color: var(--gold);
+    }
+    
+    .rank-other {
+      background: var(--bg-hover);
+      color: var(--text-secondary);
+    }
+    
+    .bid-row-name {
+      color: var(--text-secondary);
+      flex: 1;
+    }
+    
+    .bid-row-amt {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .bid-row-time {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      margin-left: 0.75rem;
+    }
+    
+    .no-bids-msg {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 0.5rem 0;
+    }
+    
+    .live-refresh-note {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .pulse-sm {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(1.3); }
+    }
+    
+    .btn-reset-demo {
+      background: var(--bg-hover);
+      color: var(--info);
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    /* Notifications */
+    .notif-wrapper {
+      position: relative;
+    }
+    
+    .notif-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+    
+    .notif-badge.visible {
+      display: flex;
+    }
+    
+    .notif-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      width: 340px;
+      max-height: 420px;
+      overflow-y: auto;
+      background: var(--modal-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px var(--shadow);
+      z-index: 9999;
+      display: none;
+    }
+    
+    .notif-dropdown.open {
+      display: block;
+    }
+    
+    .notif-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .notif-head-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .notif-mark-read {
+      font-size: 0.72rem;
+      color: var(--gold);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+    
+    .notif-item {
+      display: flex;
+      gap: 0.65rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    
+    .notif-item:hover {
+      background: var(--bg-hover);
+    }
+    
+    .notif-item.unread {
+      background: rgba(201, 168, 76, 0.1);
+    }
+    
+    .notif-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+    
+    .notif-icon.win {
+      background: rgba(34, 197, 94, 0.15);
+    }
+    
+    .notif-icon.outbid {
+      background: rgba(239, 68, 68, 0.12);
+    }
+    
+    .notif-icon.info {
+      background: rgba(59, 130, 246, 0.12);
+    }
+    
+    .notif-text {
+      flex: 1;
+    }
+    
+    .notif-msg {
+      font-size: 0.78rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    
+    .notif-time {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
+    
+    .notif-empty {
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .dash-wrapper {
+        margin-left: 0;
+      }
+      .hamburger {
+        display: flex;
+      }
+      .sb-close {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">Auto<span>Bid</span></div>
+    <button class="sb-close" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div class="sb-profile">
+    <div class="sb-avatar">{{ dealer.name[0].upper() }}</div>
+    <div class="sb-profile-info">
+      <div class="sb-pname">{{ dealer.name }}</div>
+      <div class="sb-pbiz">{{ dealer.business_name or 'AutoBid Dealer' }}</div>
+    </div>
+    <span class="sb-status-dot {% if dealer.status=='verified' %}dot-green{% elif dealer.status=='pending' %}dot-gold{% else %}dot-gray{% endif %}"></span>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-nav-label">MAIN</div>
+    <a class="sb-link active" data-sec="sec-overview" onclick="switchSection(this)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </a>
+    <a class="sb-link" data-sec="sec-cars" onclick="switchSection(this)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h14a2 2 0 012 2v1"/><path d="M14 17h7m0 0l-3-3m3 3l-3 3"/><circle cx="7.5" cy="17.5" r="2.5"/></svg>
+      Browse Cars
+      <span class="sb-badge">{{ cars|length }}</span>
+    </a>
+    <a class="sb-link" data-sec="sec-auctions" onclick="switchSection(this)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6l9-3 9 3v6c0 5-4 9-9 10C7 18 3 14 3 12V6z"/></svg>
+      Live Auctions
+    </a>
+    <a class="sb-link" data-sec="sec-bids" onclick="switchSection(this)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+      My Bids
+      <span class="sb-badge">{{ my_bids|length }}</span>
+    </a>
+    <a class="sb-link" data-sec="sec-orders" onclick="switchSection(this)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      My Orders
+      <span class="sb-badge">{{ my_orders|length }}</span>
+    </a>
+  </nav>
+  <div class="sb-footer">
+    {% if dealer.status == 'incomplete' %}
+    <a href="{{ url_for('onboarding') }}" class="sb-verify-btn">Complete Verification →</a>
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="sb-logout">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Logout
+    </a>
+  </div>
+</aside>
+
+<div class="dash-wrapper">
+  <header class="dash-topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div class="topbar-breadcrumb" id="page-title">Overview</div>
+    </div>
+    <div class="topbar-right">
+      {% if dealer.status != 'verified' %}
+      <a href="{{ url_for('onboarding') }}" class="topbar-verify-chip">⚠ Verify Account</a>
+      {% endif %}
+      
+      <!-- THEME TOGGLE BUTTON -->
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">
+        <span class="icon" id="theme-icon">🌞</span>
+        <span id="theme-text">Light</span>
+      </button>
+      
+      <div class="notif-wrapper" id="notif-wrapper">
+        <div class="topbar-notif" id="notif-bell" onclick="toggleNotifications()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notif-badge" id="notif-badge"></span>
+        </div>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-head">
+            <span class="notif-head-title">Notifications</span>
+            <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+          </div>
+          <div id="notif-list"><div class="notif-empty">Loading...</div></div>
+        </div>
+      </div>
+      <div class="topbar-avatar">{{ dealer.name[0].upper() }}</div>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <!-- OVERVIEW SECTION -->
+    <section class="dash-section active" id="sec-overview">
+      <div class="sec-head">
+        <h2>Welcome back, <span class="gold-txt">{{ dealer.name.split()[0] }}</span> 👋</h2>
+        <p>{{ dealer.business_name or 'Your dealership' }} · {{ dealer.city or 'India' }} · <span style="background:var(--bg-hover); padding:2px 8px; border-radius:20px; font-size:0.7rem;">{{ dealer.status|capitalize }}</span></p>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <svg width="22" height="22" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h14a2 2 0 012 2"/><circle cx="14" cy="17" r="3"/><circle cx="6" cy="17" r="3"/></svg>
+          </div>
+          <div class="kpi-body"><div class="kpi-val">{{ cars|length }}</div><div class="kpi-lbl">Cars in Auction</div><div class="kpi-sub">Live right now</div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <svg width="22" height="22" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          </div>
+          <div class="kpi-body"><div class="kpi-val">{{ my_bids|length }}</div><div class="kpi-lbl">My Total Bids</div><div class="kpi-sub">Across all auctions</div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <svg width="22" height="22" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </div>
+          <div class="kpi-body"><div class="kpi-val">{{ my_orders|length }}</div><div class="kpi-lbl">Total Purchases</div><div class="kpi-sub">Auction + Buy Now</div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <svg width="22" height="22" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-val">{% if my_orders %}₹{{ "{:,.0f}".format(my_orders|sum(attribute='price')/100000) }}L{% else %}₹0{% endif %}</div>
+            <div class="kpi-lbl">Total Spent</div><div class="kpi-sub">All purchases combined</div>
+          </div>
+        </div>
+      </div>
+      <div class="quick-actions">
+        <div class="qa-head">Quick Actions</div>
+        <div class="qa-grid">
+          <button class="qa-btn" onclick="switchSectionById('sec-cars')"><span>🚗</span> Browse Cars</button>
+          <button class="qa-btn" onclick="switchSectionById('sec-auctions')"><span>🔨</span> Live Auctions</button>
+          <button class="qa-btn" onclick="switchSectionById('sec-bids')"><span>📋</span> My Bids</button>
+          <button class="qa-btn" style="background:var(--gold); color:white;" onclick="switchSectionById('sec-orders')"><span>📦</span> My Orders</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BROWSE CARS SECTION -->
+    <section class="dash-section" id="sec-cars">
+      <div class="sec-head">
+        <div><h2>Browse Cars</h2><p>{{ cars|length }} vehicles available in auction</p></div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-group"><label>Brand</label>
+          <select class="form-control" id="f-brand">
+            <option value="">All Brands</option>
+            {% set seen=[] %}{% for car in cars %}{% if car.brand not in seen %}{% set _=seen.append(car.brand) %}<option>{{ car.brand }}</option>{% endif %}{% endfor %}
+          </select>
+        </div>
+        <div class="filter-group"><label>Fuel</label>
+          <select class="form-control" id="f-fuel">
+            <option value="">All Types</option><option>Petrol</option><option>Diesel</option>
+          </select>
+        </div>
+        <div class="filter-group"><label>City</label>
+          <select class="form-control" id="f-city">
+            <option value="">All Cities</option>
+            {% set cseen=[] %}{% for car in cars %}{% if car.city not in cseen %}{% set _=cseen.append(car.city) %}<option>{{ car.city }}</option>{% endif %}{% endfor %}
+          </select>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="applyFilters()">Filter</button>
+        <button class="btn" style="background:var(--bg-hover);" onclick="resetFilters()">Reset</button>
+      </div>
+      <div class="cars-grid" id="cars-grid">
+        {% for car in cars %}
+        <div class="car-card" data-brand="{{ car.brand }}" data-fuel="{{ car.fuel }}" data-city="{{ car.city }}">
+          <div class="car-thumb">
+            <img src="{{ url_for('static', filename='images/' + car.image) }}" alt="{{ car.name }}" onerror="this.src='https://via.placeholder.com/300x200?text=AutoBid+Pro'">
+            <div class="car-tags">
+              <span class="ctag ctag-brand">{{ car.brand }}</span>
+              <span class="ctag ctag-fuel">{{ car.fuel }}</span>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-title">{{ car.name }} <span class="car-year">{{ car.year }}</span></div>
+            <div class="car-meta-row">
+              <span>📍 {{ car.city }}</span>
+              <span>🛣 {{ "{:,}".format(car.km) }} km</span>
+            </div>
+            {% if car.highest_bid > car.price %}
+            <div class="hb-badge">🔥 Highest Bid: ₹{{ "{:,.0f}".format(car.highest_bid) }}</div>
+            {% endif %}
+            <div class="car-pricing">
+              <div class="price-col">
+                <div class="price-lbl">Base Price</div>
+                <div class="price-amt">₹{{ "{:,.0f}".format(car.price) }}</div>
+              </div>
+              <div class="price-col">
+                <div class="price-lbl">Color / Trans</div>
+                <div class="price-amt" style="font-size:0.8rem;">{{ car.color or 'N/A' }} · {{ car.transmission or 'Manual' }}</div>
+              </div>
+            </div>
+            <div class="car-actions">
+              <button class="btn btn-gold btn-sm" onclick="openBidModal({{ car.id }}, '{{ car.name }} {{ car.year }}', {{ car.highest_bid }}, {{ car.price }})">🔨 Bid</button>
+              <button class="btn btn-buy btn-sm" onclick="openBuyModal({{ car.id }}, '{{ car.name }} {{ car.year }}', {{ car.highest_bid if car.highest_bid > car.price else car.price }})">💳 Buy Now</button>
+              <a href="/inspection-report/{{ car.id }}" class="btn-inspect">📋 Report</a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty-state"><div class="es-icon">🚗</div><p>No cars available right now</p></div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- LIVE AUCTIONS SECTION -->
+    <section class="dash-section" id="sec-auctions">
+      <div class="sec-head">
+        <div><h2>Live Auctions</h2><p>All bids are visible to all logged-in dealers · Updates every 5 seconds</p></div>
+        <button class="btn-reset-demo" onclick="resetAuctions()">🔄 Reset Demo</button>
+      </div>
+      <div class="live-refresh-note">
+        <div class="pulse-sm"></div>
+        <span id="last-refresh-time">Connecting to live auction feed...</span>
+      </div>
+      <div id="auction-list-container">
+        <div class="empty-state"><div class="es-icon">🔨</div><p>Loading live auctions...</p></div>
+      </div>
+    </section>
+
+    <!-- MY BIDS SECTION -->
+    <section class="dash-section" id="sec-bids">
+      <div class="sec-head"><h2>My Bids</h2><p>{{ my_bids|length }} total bids placed</p></div>
+      {% if my_bids %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Car</th><th>My Bid</th><th>Highest Bid</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for bid in my_bids %}
+            <tr>
+              <td><strong>{{ bid.car_name }}</strong> <span style="color:var(--text-secondary);">{{ bid.year }}</span></td>
+              <td style="color:var(--gold); font-weight:600;">₹{{ "{:,.0f}".format(bid.bid_amount) }}</td>
+              <td>₹{{ "{:,.0f}".format(bid.highest_bid) }}</td>
+              <td style="color:var(--text-secondary);">{{ bid.bid_time[:16] }}</td>
+              <td>{% if bid.bid_amount >= bid.highest_bid %}<span style="background:var(--success); color:white; padding:2px 8px; border-radius:20px; font-size:0.7rem;">Leading</span>{% else %}<span style="background:var(--danger); color:white; padding:2px 8px; border-radius:20px; font-size:0.7rem;">Outbid</span>{% endif %}</td>
+              <td style="display:flex; gap:0.5rem;">
+                <button class="btn btn-gold btn-sm" onclick="openBidModal({{ bid.car_id }}, '{{ bid.car_name }}', {{ bid.highest_bid }}, {{ bid.price }})">Rebid</button>
+                <button class="btn btn-buy btn-sm" onclick="openBuyModal({{ bid.car_id }}, '{{ bid.car_name }}', {{ bid.highest_bid if bid.highest_bid > bid.price else bid.price }})">Buy</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state"><div class="es-icon">🔨</div><p>No bids placed yet. <button class="btn btn-gold btn-sm" onclick="switchSectionById('sec-cars')">Browse cars →</button></p></div>
+      {% endif %}
+    </section>
+
+    <!-- MY ORDERS SECTION -->
+    <section class="dash-section" id="sec-orders">
+      <div class="sec-head"><h2>My Orders</h2><p>{{ my_orders|length }} purchases made</p></div>
+      {% if my_orders %}
+      <div class="orders-list">
+        {% for order in my_orders %}
+        <div class="order-card">
+          <div class="order-icon">📦</div>
+          <div class="order-info" style="flex:1;">
+            <div class="order-name">{{ order.car_name }} <span style="font-size:0.75rem; color:var(--text-secondary);">{{ order.year }}</span></div>
+            <div class="order-meta" style="font-size:0.75rem; color:var(--text-secondary);">{{ order.brand }} · {{ order.color or '' }} · {{ order.fuel or '' }}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="order-price">₹{{ "{:,.0f}".format(order.price) }}</div>
+            <span style="background:var(--success); color:white; padding:2px 8px; border-radius:20px; font-size:0.7rem;">{{ order.status|title }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state"><div class="es-icon">📦</div><p>No orders yet. Win an auction or buy a car to see your orders here.</p></div>
+      {% endif %}
+    </section>
+  </main>
+</div>
+
+<!-- BID MODAL -->
+<div class="modal-overlay" id="bid-modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Place Your Bid</div>
+      <button class="modal-close" onclick="closeModal('bid-modal-overlay')">✕</button>
+    </div>
+    <div id="bid-car-name" style="font-weight:600; margin-bottom:1rem;"></div>
+    <div class="bid-current-row">
+      <span>Current Highest Bid</span>
+      <strong id="bid-current-highest" style="color:var(--gold);"></strong>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label style="display:block; margin-bottom:0.5rem;">Your Bid Amount (₹)</label>
+      <input class="form-control" type="number" id="bid-amount-input" placeholder="e.g. 800000" style="width:100%;">
+      <span id="bid-hint-text" style="font-size:0.7rem; color:var(--text-secondary);"></span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" style="flex:1" onclick="submitBid()">Confirm Bid 🔨</button>
+      <button class="btn" style="background:var(--bg-hover);" onclick="closeModal('bid-modal-overlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUY NOW MODAL -->
+<div class="modal-overlay" id="buy-modal-overlay">
+  <div class="modal-box modal-box-lg">
+    <div class="modal-header">
+      <div class="modal-title">💳 Buy Now</div>
+      <button class="modal-close" onclick="closeModal('buy-modal-overlay')">✕</button>
+    </div>
+    <div id="buy-car-name" style="font-weight:600; margin-bottom:1rem;"></div>
+    <div class="price-breakdown">
+      <div class="pb-row"><span class="pb-label">Vehicle Price</span><span class="pb-value" id="pb-vehicle">—</span></div>
+      <div class="pb-row"><span class="pb-label">GST (5%)</span><span class="pb-value" id="pb-gst">—</span></div>
+      <div class="pb-row"><span class="pb-label">RTO (2%)</span><span class="pb-value" id="pb-rto">—</span></div>
+      <div class="pb-row"><span class="pb-label">Insurance</span><span class="pb-value">₹18,500</span></div>
+      <div class="pb-row"><span class="pb-label">Total On-Road</span><span class="pb-value gold-txt" id="pb-total">—</span></div>
+    </div>
+    <div class="emi-section">
+      <div class="emi-title">📊 EMI Calculator (Optional)</div>
+      <div class="emi-grid">
+        <div class="emi-inp"><label>Down Payment (₹)</label><input type="number" id="emi-down" placeholder="e.g. 100000" oninput="calcEMI()"></div>
+        <div class="emi-inp"><label>Interest Rate (% p.a.)</label><input type="number" id="emi-rate" value="9.5" step="0.1" oninput="calcEMI()"></div>
+        <div class="emi-inp"><label>Loan Tenure</label>
+          <select id="emi-tenure" onchange="calcEMI()">
+            <option value="12">12 Months</option><option value="24">24 Months</option><option value="36" selected>36 Months</option>
+            <option value="48">48 Months</option><option value="60">60 Months</option>
+          </select>
+        </div>
+        <div class="emi-inp" style="display:flex;align-items:flex-end;"><button class="btn" style="background:var(--bg-hover); width:100%" onclick="clearEMI()">Clear EMI</button></div>
+      </div>
+      <div class="emi-result" id="emi-result" style="display:none;">
+        <div class="emi-result-item"><div class="emi-result-val" id="emi-monthly">—</div><div class="emi-result-lbl">Monthly EMI</div></div>
+        <div class="emi-result-item"><div class="emi-result-val" id="emi-loan">—</div><div class="emi-result-lbl">Loan Amount</div></div>
+      </div>
+    </div>
+    <div class="doc-upload-area">
+      <div style="font-size:.88rem;font-weight:700;color:var(--text-primary);margin-bottom:.25rem;">📁 Required Documents</div>
+      <div style="font-size:.75rem;color:var(--text-secondary);">Upload all 3 documents to complete your purchase</div>
+      <div id="docs-check-bar" class="docs-check-bar incomplete">⚠ Documents incomplete — upload all 3 to enable Buy Now</div>
+      <div class="doc-list" id="doc-list">
+        <div class="doc-item" id="doc-aadhaar">
+          <div class="doc-item-left"><span>🪪</span><div><div class="doc-name">Aadhaar Card</div><div class="doc-status missing" id="st-aadhaar">Not uploaded</div></div></div>
+          <label class="doc-upload-btn" id="btn-aadhaar">Upload <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="uploadDoc('aadhaar',this)"></label>
+        </div>
+        <div class="doc-item" id="doc-pan">
+          <div class="doc-item-left"><span>🗂</span><div><div class="doc-name">PAN Card</div><div class="doc-status missing" id="st-pan">Not uploaded</div></div></div>
+          <label class="doc-upload-btn" id="btn-pan">Upload <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="uploadDoc('pan',this)"></label>
+        </div>
+        <div class="doc-item" id="doc-address_proof">
+          <div class="doc-item-left"><span>🏠</span><div><div class="doc-name">Address Proof</div><div class="doc-status missing" id="st-address_proof">Not uploaded</div></div></div>
+          <label class="doc-upload-btn" id="btn-address_proof">Upload <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="uploadDoc('address_proof',this)"></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-buy" style="flex:1;" id="confirm-buy-btn" onclick="confirmBuyNow()" disabled>🔒 Upload Documents to Buy</button>
+      <button class="btn" style="background:var(--bg-hover);" onclick="closeModal('buy-modal-overlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="sidebar-overlay" id="sb-overlay" onclick="toggleSidebar()" style="position:fixed; top:0; left:0; right:0; bottom:0; background:var(--overlay); z-index:99; display:none;"></div>
+
+<script>
+// ── SECTION NAVIGATION ──
+const titles = {
+  'sec-overview':'Overview','sec-cars':'Browse Cars','sec-auctions':'Live Auctions',
+  'sec-bids':'My Bids','sec-orders':'My Orders'
+};
+function switchSection(el) {
+  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const secId = el.dataset.sec;
+  document.getElementById(secId).classList.add('active');
+  document.getElementById('page-title').textContent = titles[secId] || '';
+  if (window.innerWidth < 900) toggleSidebar();
+}
+function switchSectionById(id) {
+  const link = document.querySelector(`[data-sec="${id}"]`);
+  if (link) switchSection(link);
+}
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sb-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+}
+function applyFilters() {
+  const brand=document.getElementById('f-brand').value;
+  const fuel=document.getElementById('f-fuel').value;
+  const city=document.getElementById('f-city').value;
+  document.querySelectorAll('.car-card').forEach(c => {
+    const ok=(!brand||c.dataset.brand===brand)&&(!fuel||c.dataset.fuel===fuel)&&(!city||c.dataset.city===city);
+    c.style.display = ok ? '' : 'none';
+  });
+}
+function resetFilters() {
+  ['f-brand','f-fuel','f-city'].forEach(id => document.getElementById(id).value='');
+  document.querySelectorAll('.car-card').forEach(c => c.style.display='');
+}
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  html.setAttribute('data-theme', newTheme);
+  
+  // Update button text and icon
+  const themeIcon = document.getElementById('theme-icon');
+  const themeText = document.getElementById('theme-text');
+  
+  if (newTheme === 'dark') {
+    themeIcon.innerHTML = '🌙';
+    themeText.innerHTML = 'Dark';
+  } else {
+    themeIcon.innerHTML = '🌞';
+    themeText.innerHTML = 'Light';
+  }
+  
+  // Save preference to server
+  fetch('/api/set-theme', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ theme: newTheme })
+  }).catch(e => console.error('Failed to save theme:', e));
+}
+
+// Initialize theme from saved preference
+const savedTheme = document.documentElement.getAttribute('data-theme') || 'light';
+const themeIcon = document.getElementById('theme-icon');
+const themeText = document.getElementById('theme-text');
+if (savedTheme === 'dark') {
+  themeIcon.innerHTML = '🌙';
+  themeText.innerHTML = 'Dark';
+} else {
+  themeIcon.innerHTML = '🌞';
+  themeText.innerHTML = 'Light';
+}
+
+// ── BID MODAL ──
+let activeCar = {};
+function openBidModal(carId, carName, highest, basePrice) {
+  activeCar = { carId, highest, basePrice };
+  document.getElementById('bid-car-name').textContent = carName;
+  document.getElementById('bid-current-highest').textContent = '₹' + highest.toLocaleString('en-IN');
+  document.getElementById('bid-amount-input').value = '';
+  document.getElementById('bid-hint-text').textContent = 'Must exceed ₹' + highest.toLocaleString('en-IN');
+  openModal('bid-modal-overlay');
+}
+async function submitBid() {
+  const amt = parseFloat(document.getElementById('bid-amount-input').value);
+  if (!amt || amt <= activeCar.highest) { showToast('Bid must exceed ₹' + activeCar.highest.toLocaleString('en-IN'), 'error'); return; }
+  const res = await fetch('/api/bid', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ car_id: activeCar.carId, bid_amount: amt }) });
+  const data = await res.json();
+  closeModal('bid-modal-overlay');
+  showToast(data.message, data.success ? 'success' : 'error');
+  if (data.success) {
+    activeCar.highest = amt;
+    fetchLiveBids();
+  }
+}
+
+// ── BUY NOW MODAL ──
+let buyCarId = 0, buyPrice = 0, uploadedDocs = [];
+function openBuyModal(carId, carName, price) {
+  buyCarId = carId; buyPrice = price; uploadedDocs = [];
+  document.getElementById('buy-car-name').textContent = carName;
+  const gst=price*0.05, rto=price*0.02, total=price+gst+rto+18500;
+  document.getElementById('pb-vehicle').textContent = '₹' + price.toLocaleString('en-IN');
+  document.getElementById('pb-gst').textContent = '₹' + Math.round(gst).toLocaleString('en-IN');
+  document.getElementById('pb-rto').textContent = '₹' + Math.round(rto).toLocaleString('en-IN');
+  document.getElementById('pb-total').textContent = '₹' + Math.round(total).toLocaleString('en-IN');
+  document.getElementById('emi-down').value='';
+  document.getElementById('emi-rate').value='9.5';
+  document.getElementById('emi-tenure').value='36';
+  document.getElementById('emi-result').style.display='none';
+  ['aadhaar','pan','address_proof'].forEach(dt => {
+    document.getElementById('st-'+dt).textContent = 'Not uploaded';
+    document.getElementById('st-'+dt).className = 'doc-status missing';
+    document.getElementById('btn-'+dt).className = 'doc-upload-btn';
+    document.getElementById('btn-'+dt).innerHTML = 'Upload <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="uploadDoc(\''+dt+'\',this)">';
+  });
+  updateBuyBtn();
+  fetch(`/api/check-documents/${carId}`).then(r=>r.json()).then(data => {
+    uploadedDocs = data.uploaded;
+    uploadedDocs.forEach(dt => markDocUploaded(dt));
+    updateBuyBtn();
+  });
+  openModal('buy-modal-overlay');
+}
+function calcEMI() {
+  const down=parseFloat(document.getElementById('emi-down').value)||0;
+  const rate=parseFloat(document.getElementById('emi-rate').value)||9.5;
+  const months=parseInt(document.getElementById('emi-tenure').value)||36;
+  const loan=buyPrice-down;
+  if(loan<=0){document.getElementById('emi-result').style.display='none';return;}
+  const r=rate/(12*100);
+  const emi=loan*r*Math.pow(1+r,months)/(Math.pow(1+r,months)-1);
+  document.getElementById('emi-monthly').textContent='₹'+Math.round(emi).toLocaleString('en-IN');
+  document.getElementById('emi-loan').textContent='₹'+Math.round(loan).toLocaleString('en-IN');
+  document.getElementById('emi-result').style.display='flex';
+}
+function clearEMI(){document.getElementById('emi-down').value='';document.getElementById('emi-result').style.display='none';}
+async function uploadDoc(docType, input) {
+  if(!input.files[0]) return;
+  const fd=new FormData();
+  fd.append('car_id',buyCarId); fd.append('doc_type',docType); fd.append('document',input.files[0]);
+  showToast('Uploading document...','info');
+  const res=await fetch('/api/upload-document',{method:'POST',body:fd});
+  const data=await res.json();
+  if(data.success){uploadedDocs=data.uploaded;markDocUploaded(docType);updateBuyBtn();showToast(data.message,'success');}
+  else showToast(data.message,'error');
+}
+function markDocUploaded(docType){
+  document.getElementById('st-'+docType).textContent='✓ Uploaded';
+  document.getElementById('st-'+docType).className='doc-status uploaded';
+  const btn=document.getElementById('btn-'+docType);
+  btn.className='doc-upload-btn done'; btn.textContent='✓ Done';
+}
+function updateBuyBtn(){
+  const required=['aadhaar','pan','address_proof'];
+  const complete=required.every(r=>uploadedDocs.includes(r));
+  const btn=document.getElementById('confirm-buy-btn');
+  const bar=document.getElementById('docs-check-bar');
+  if(complete){
+    btn.disabled=false; btn.textContent='✅ Confirm Purchase';
+    bar.className='docs-check-bar complete'; bar.textContent='✓ All documents uploaded — ready to purchase!';
+  } else {
+    btn.disabled=true;
+    const missing=required.filter(r=>!uploadedDocs.includes(r));
+    btn.textContent=`🔒 Upload ${missing.length} more document(s)`;
+    bar.className='docs-check-bar incomplete';
+    bar.textContent=`⚠ Missing: ${missing.map(m=>m.replace('_',' ')).join(', ')}`;
+  }
+}
+async function confirmBuyNow(){
+  const down=parseFloat(document.getElementById('emi-down').value)||0;
+  const rate=parseFloat(document.getElementById('emi-rate').value)||0;
+  const months=parseInt(document.getElementById('emi-tenure').value)||0;
+  const loanAmt=buyPrice-down;
+  let emiAmt=0;
+  if(down>0&&loanAmt>0){const r=rate/(12*100);emiAmt=loanAmt*r*Math.pow(1+r,months)/(Math.pow(1+r,months)-1);}
+  const res=await fetch('/api/buy-now',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({car_id:buyCarId,loan_amount:loanAmt>0?loanAmt:0,emi_amount:Math.round(emiAmt),tenure_months:emiAmt>0?months:0})});
+  const data=await res.json();
+  closeModal('buy-modal-overlay');
+  showToast(data.message,data.success?'success':'error');
+  if(data.success) setTimeout(()=>location.reload(),1800);
+}
+
+// ── MODAL HELPERS ──
+function openModal(id){document.getElementById(id).classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');});
+});
+
+// ── TOAST ──
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=(type==='success'?'✅ ':'❌ ')+msg;
+  t.className='show '+type;
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.className='',3500);
+}
+
+// ── LIVE AUCTIONS ──
+async function fetchLiveBids() {
+  try {
+    const res = await fetch('/api/live-bids');
+    const data = await res.json();
+    const container = document.getElementById('auction-list-container');
+    if (!data.auctions || data.auctions.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="es-icon">🔨</div><p>No active auctions right now.</p></div>';
+      return;
+    }
+    let html = '';
+    data.auctions.forEach(auc => {
+      const endTime = auc.auction_end.replace(' ', 'T');
+      html += `
+        <div class="auction-row" id="auc-row-${auc.car_id}">
+          <div class="auc-details-wrap">
+            <div class="auc-name" style="font-weight:700;color:var(--text-primary);font-size:.92rem;">${auc.car_name}</div>
+            <div class="auc-meta" style="font-size:.75rem;color:var(--text-secondary);margin-top:.2rem;">
+              Base: ₹${auc.base_price.toLocaleString('en-IN')}
+            </div>
+          </div>
+          <div class="auc-stat">
+            <div class="auc-stat-lbl" style="font-size:.7rem;color:var(--text-secondary);">🔥 Highest Bid</div>
+            <div class="auc-stat-val gold-txt" id="hb-${auc.car_id}" style="font-weight:700;color:var(--gold);">
+              ${auc.highest_bid > 0 ? '₹'+auc.highest_bid.toLocaleString('en-IN') : '—'}
+            </div>
+          </div>
+          <div class="auc-stat">
+            <div class="auc-stat-lbl" style="font-size:.7rem;color:var(--text-secondary);">⏱ Ends In</div>
+            <div class="auc-timer" id="timer-${auc.car_id}" data-end="${endTime}" style="font-weight:600;">--:--</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <button class="btn btn-gold btn-sm bid-btn" id="bid-btn-${auc.car_id}"
+                    onclick="openBidModal(${auc.car_id},'${auc.car_name}',${auc.highest_bid},${auc.base_price})">
+              Bid →
+            </button>
+            <button class="btn btn-buy btn-sm"
+                    onclick="openBuyModal(${auc.car_id},'${auc.car_name}',${Math.max(auc.highest_bid,auc.base_price)})">
+              Buy Now
+            </button>
+          </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+    updateTimers();
+    const now = new Date();
+    document.getElementById('last-refresh-time').textContent = `Last updated: ${now.toLocaleTimeString('en-IN')} · Auto-refreshes every 5 seconds`;
+  } catch(e) {
+    document.getElementById('last-refresh-time').textContent = 'Connection error — retrying...';
+  }
+}
+
+function updateTimers() {
+  document.querySelectorAll('.auc-timer').forEach(el => {
+    if (!el.dataset.end) return;
+    const end = new Date(el.dataset.end).getTime();
+    const diff = end - Date.now();
+    const carId = el.id.replace('timer-', '');
+    const bidBtn = document.getElementById(`bid-btn-${carId}`);
+    if (diff <= 0) {
+      el.textContent = 'Ended';
+      el.style.color = 'var(--danger)';
+      if (bidBtn) { bidBtn.disabled = true; bidBtn.innerHTML = 'Closed'; }
+    } else {
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      el.style.color = diff < 60000 ? 'var(--danger)' : 'var(--gold)';
+      if (bidBtn) { bidBtn.disabled = false; }
+    }
+  });
+}
+
+async function resetAuctions() {
+  if (!confirm('Reset all auctions to fresh 5-minute timers? This will clear all bids.')) return;
+  const res = await fetch('/api/reset-auctions', {method:'POST'});
+  const data = await res.json();
+  showToast(data.message, 'success');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// ── NOTIFICATIONS ──
+let notifOpen = false;
+async function fetchNotifications() {
+  try {
+    const res = await fetch('/api/notifications');
+    const data = await res.json();
+    const badge = document.getElementById('notif-badge');
+    const list = document.getElementById('notif-list');
+    if (data.unread_count > 0) {
+      badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
+      badge.classList.add('visible');
+    } else {
+      badge.classList.remove('visible');
+    }
+    if (!data.notifications || data.notifications.length === 0) {
+      list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+      return;
+    }
+    list.innerHTML = data.notifications.map(n => {
+      const icon = n.type === 'win' ? '🏆' : n.type === 'outbid' ? '⚡' : 'ℹ️';
+      const iconClass = n.type === 'win' ? 'win' : n.type === 'outbid' ? 'outbid' : 'info';
+      return `
+        <div class="notif-item ${n.is_read ? '' : 'unread'}">
+          <div class="notif-icon ${iconClass}">${icon}</div>
+          <div class="notif-text">
+            <div class="notif-msg">${n.message}</div>
+            <div class="notif-time">${n.created_at ? n.created_at.slice(0,10) : ''}</div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {}
+}
+function toggleNotifications() {
+  const dropdown = document.getElementById('notif-dropdown');
+  notifOpen = !notifOpen;
+  dropdown.classList.toggle('open', notifOpen);
+  if (notifOpen) fetchNotifications();
+}
+async function markAllRead() {
+  await fetch('/api/notifications/mark-read', {method:'POST'});
+  fetchNotifications();
+}
+document.addEventListener('click', e => {
+  const wrapper = document.getElementById('notif-wrapper');
+  if (wrapper && !wrapper.contains(e.target) && notifOpen) {
+    notifOpen = false;
+    document.getElementById('notif-dropdown').classList.remove('open');
+  }
+});
+
+// Initialize
+setInterval(updateTimers, 1000);
+fetchLiveBids();
+setInterval(fetchLiveBids, 5000);
+fetchNotifications();
+setInterval(fetchNotifications, 10000);
+</script>
+</body>
+</html>
