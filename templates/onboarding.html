@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding — AutoBid Pro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/onboarding.css') }}">
+</head>
+<body class="onboard-page">
+
+<div class="onboard-nav">
+  <a href="{{ url_for('index') }}" class="nav-logo">Auto<span>Bid</span> Pro</a>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <span class="onboard-nav-info">Verification — Step {{ step }} of 4</span>
+    {% if step < 4 %}
+    <a href="{{ url_for('skip_onboarding') }}" class="btn-skip">Skip for now →</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="onboard-wrapper">
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-track">
+    {% set steps_list = ['Business Details', 'Documents', 'Bank Details', 'Complete'] %}
+    {% for i in range(1, 5) %}
+      <div class="progress-step {% if i < step %}done{% elif i == step %}active{% endif %}">
+        <div class="ps-circle">{% if i < step %}✓{% else %}{{ i }}{% endif %}</div>
+        <div class="ps-label">{{ steps_list[i-1] }}</div>
+      </div>
+      {% if i < 4 %}<div class="progress-connector {% if i < step %}filled{% endif %}"></div>{% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- STEP CARD -->
+  <div class="onboard-card">
+
+    {% if step == 1 %}
+    <div class="step-header">
+      <div class="step-icon">🏢</div>
+      <h2>Business Details</h2>
+      <p>Tell us about your dealership</p>
+    </div>
+    <form method="POST" action="{{ url_for('onboarding', step=1) }}" class="onboard-form">
+      <div class="form-group">
+        <label>Business / Dealership Name</label>
+        <input class="form-control" type="text" name="business_name" value="{{ dealer.business_name or '' }}" placeholder="Mehta Auto Sales Pvt. Ltd." required>
+      </div>
+      <div class="form-group">
+        <label>City of Operation</label>
+        <select class="form-control" name="city" required>
+          <option value="" disabled {% if not dealer.city %}selected{% endif %}>Select city</option>
+          {% for city in ['Ahmedabad','Mumbai','Delhi','Surat','Pune','Bangalore','Jaipur','Chennai','Hyderabad','Kolkata'] %}
+            <option {% if dealer.city == city %}selected{% endif %}>{{ city }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="ob-btn-row">
+        <button type="submit" class="btn btn-gold" style="flex:1;">Continue →</button>
+        <a href="{{ url_for('skip_onboarding') }}" class="btn btn-ghost">Skip All</a>
+      </div>
+    </form>
+
+    {% elif step == 2 %}
+    <div class="step-header">
+      <div class="step-icon">📄</div>
+      <h2>Document Upload</h2>
+      <p>KYC verification (optional — you can skip)</p>
+    </div>
+    <form method="POST" action="{{ url_for('onboarding', step=2) }}" class="onboard-form">
+      <div class="form-group">
+        <label>PAN Card Number <span class="opt-tag">optional</span></label>
+        <input class="form-control" type="text" name="pan" value="{{ dealer.pan or '' }}" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase">
+      </div>
+      <div class="form-group">
+        <label>Aadhaar Number <span class="opt-tag">optional</span></label>
+        <input class="form-control" type="text" name="aadhaar" value="{{ dealer.aadhaar or '' }}" placeholder="XXXX XXXX XXXX" maxlength="12">
+      </div>
+      <div class="upload-note">
+        <span>📎</span>
+        <p>Document copies will be collected during verification call. You can also fill these later.</p>
+      </div>
+      <div class="ob-btn-row">
+        <button type="submit" class="btn btn-gold" style="flex:1;">Continue →</button>
+        <a href="{{ url_for('onboarding', step=3) }}" class="btn btn-ghost">Skip Step</a>
+      </div>
+    </form>
+
+    {% elif step == 3 %}
+    <div class="step-header">
+      <div class="step-icon">🏦</div>
+      <h2>Bank Details</h2>
+      <p>For payments and refunds (optional)</p>
+    </div>
+    <form method="POST" action="{{ url_for('onboarding', step=3) }}" class="onboard-form">
+      <div class="form-group">
+        <label>Bank Account Number <span class="opt-tag">optional</span></label>
+        <input class="form-control" type="text" name="account_no" value="{{ dealer.account_no or '' }}" placeholder="Enter account number">
+      </div>
+      <div class="form-group">
+        <label>IFSC Code <span class="opt-tag">optional</span></label>
+        <input class="form-control" type="text" name="ifsc" value="{{ dealer.ifsc or '' }}" placeholder="SBIN0001234" style="text-transform:uppercase">
+      </div>
+      <div class="security-note">
+        <span>🔒</span>
+        <p>Your bank details are encrypted. Never shared with third parties.</p>
+      </div>
+      <div class="ob-btn-row">
+        <button type="submit" class="btn btn-gold" style="flex:1;">Submit →</button>
+        <a href="{{ url_for('skip_onboarding') }}" class="btn btn-ghost">Skip All</a>
+      </div>
+    </form>
+
+    {% elif step == 4 %}
+    <div class="step-completion">
+      <div class="completion-icon"><div class="check-ring"></div><span>✓</span></div>
+      <h2>Verification Submitted!</h2>
+      <p>Our team will verify your account within <strong>24 hours</strong>.</p>
+      <div class="completion-details">
+        <div class="cd-row"><span>Dealer Name</span><strong>{{ dealer.name }}</strong></div>
+        <div class="cd-row"><span>Business</span><strong>{{ dealer.business_name or '—' }}</strong></div>
+        <div class="cd-row"><span>City</span><strong>{{ dealer.city or '—' }}</strong></div>
+        <div class="cd-row"><span>Status</span><span class="badge badge-gold">Pending Review</span></div>
+      </div>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-gold btn-block">Go to Dashboard →</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+</body>
+</html>
